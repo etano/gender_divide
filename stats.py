@@ -1,7 +1,6 @@
-import os, json
+import os, json, cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import cv2
 
 # Global
 img_dir = './data/img'
@@ -13,11 +12,11 @@ print 'File count: '
 print '  Female: %d' % n_files(os.path.join(img_dir, 'female'))
 print '  Male: %d' % n_files(os.path.join(img_dir, 'male'))
 
-# Count metadata
+# Get metadata (removes duplicates)
 def get_gender_metadata(file):
     with open(file) as x:
         data = json.load(x)
-        return list(set(data['female'])), list(set(data['male'])) # Remove duplicates
+        return [os.path.join(img_dir, f) for f in set(data['female'])], [os.path.join(img_dir, f) for f in set(data['male'])]
 female_train, male_train = get_gender_metadata(os.path.join(meta_dir, 'train.json'))
 female_test, male_test = get_gender_metadata(os.path.join(meta_dir, 'test.json'))
 female_all = female_train + female_test
@@ -27,16 +26,16 @@ print '  Female: %d (train: %d, test: %d)' % (len(female_all), len(female_train)
 print '  Male: %d (train: %d, test: %d)' % (len(male_all), len(male_train), len(male_test))
 
 # Check all files exist
-n_bad_files = lambda x: len([f for f in x if (not os.path.isfile(os.path.join(img_dir, f)))])
+n_bad_files = lambda x: len([f for f in x if (not os.path.isfile(f))])
 print 'File check: '
 print '  Female: %d non-existent files' % (n_bad_files(female_all))
 print '  Male: %d non-existent files' % (n_bad_files(male_all))
 
 # Plot resolutions
-def get_resolution_counts(file_list):
+def get_resolution_counts(files):
     res_dict = {}
-    for file in file_list:
-        res = cv2.imread(os.path.join(img_dir, file)).shape
+    for file in files:
+        res = cv2.imread(file).shape
         if not (res in res_dict): res_dict[res] = 1
         else: res_dict[res] += 1
     return res_dict
