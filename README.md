@@ -13,7 +13,31 @@ The future is non-binary, but for now let's say it is to make things easier...
 7. Avoid impulse to fine-tune model.
 8. Make presentation.
 
+# Requirements
+
+- Keras
+- Tensorflow
+- OpenCV
+
+# Installation
+
+Assuming Ubuntu and root priviledges:
+
+    apt-get install python-pip zip hdf5
+    pip install keras
+    pip install tensorflow
+    pip install opencv-python
+    pip install h5py
+
+
+Data is found at https://storage.cloud.google.com/fw-share/20170803-fw-gender-classification-data.zip. Assuming it is downloaded and in the root directory:
+
+    unzip 20170803-fw-gender-classification-data.zip
+    mv data-v2 data
+
 # Dataset
+
+## Description
 
 Upon first look, the dataset consists of two directories of images (ones labelled male and female). The images are all square of varying resolution and contain anything for single clothing items to full scenes with people. Some images are clearly mislabeled (~ 1 in 30).
 
