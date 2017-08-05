@@ -57,13 +57,25 @@ class NaiveModel(object):
             metrics = ['accuracy']
         )
 
-    def save(self):
-        """Saves the model"""
-        self.model.save_weights(os.path.join(self.model_dir, self.name+'naive.h5'))
+    def save(self, file=None):
+        """Saves the model
 
-    def load(self):
-        """Loads the model"""
-        self.model.load_weights(os.path.join(self.model_dir, self.name+'.h5'))
+        Args:
+            file (str): File name
+        """
+        if file == None:
+            file = os.path.join(self.model_dir, self.name+'naive.h5')
+        self.model.save_weights(file)
+
+    def load(self, file=None):
+        """Loads the model
+
+        Args:
+            file (str): File name
+        """
+        if file == None:
+            file = os.path.join(self.model_dir, self.name+'naive.h5')
+        self.model.load_weights(file)
 
     def train(self, train_dir, test_dir, epochs=50, batch_size=16, class_weight=None):
         """Trains the model
@@ -137,7 +149,10 @@ class NaiveModel(object):
             batch_size = batch_size,
             class_mode = 'binary'
         )
-        return generator
+        return self.model.evaluate_generator(
+            generator,
+            generator.samples // batch_size
+        )
 
     def predict(self, dir, batch_size=16):
         """Predicts using the model
@@ -150,10 +165,13 @@ class NaiveModel(object):
             np.array: Numpy array with predictions
         """
         datagen = ImageDataGenerator(rescale = 1./255)
-        generator = predict_datagen.flow_from_directory(
+        generator = datagen.flow_from_directory(
             dir,
             target_size = (self.img_width, self.img_height),
             batch_size = batch_size,
             class_mode = 'binary'
         )
-        return generator
+        return self.model.predict_generator(
+            generator,
+            generator.samples // batch_size
+        )

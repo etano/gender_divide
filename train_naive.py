@@ -16,5 +16,6 @@ class_weight = {
 
 # Train
 model = NaiveModel(weights_dir, 'naive', img_width, img_height)
-model.train(train_dir, test_dir, epochs, batch_size, class_weight)
-model.save()
+model.load(weights_dir+'/naive/naive.h5')
+print model.evaluate(test_dir, batch_size)
+print model.predict(test_dir, batch_size)
