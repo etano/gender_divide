@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Global
-img_dir = './data/img'
-meta_dir = './data/meta'
+data_dir = './data'
+img_dir = os.path.join(data_dir, 'img')
+meta_dir = os.path.join(data_dir, 'meta')
 
 # Count files
 n_files = lambda x: len([f for f in os.listdir(x) if os.path.isfile(os.path.join(x, f))])
@@ -32,20 +33,21 @@ print '  Female: %d non-existent files' % (n_bad_files(female_all))
 print '  Male: %d non-existent files' % (n_bad_files(male_all))
 
 # Plot resolutions
-def get_resolution_counts(files):
-    res_dict = {}
-    for file in files:
-        res = cv2.imread(file).shape
-        if not (res in res_dict): res_dict[res] = 1
-        else: res_dict[res] += 1
-    return res_dict
-def plot_resolutions(res_dict, name):
-    heights, widths, counts = [], [] ,[]
-    for [height, width, channels], count in res_dict.iteritems():
-        heights.append(height)
-        widths.append(width)
-        counts.append(count)
-    plt.scatter(heights, widths, c=counts)
+def plot_resolutions(train_files, test_files, name):
+    def add_points(files, marker):
+        res_dict = {}
+        for file in files:
+            res = cv2.imread(file).shape
+            if not (res in res_dict): res_dict[res] = 1
+            else: res_dict[res] += 1
+        heights, widths, counts = [], [] ,[]
+        for [height, width, channels], count in res_dict.iteritems():
+            heights.append(height)
+            widths.append(width)
+            counts.append(count)
+        plt.scatter(heights, widths, c=counts, marker=marker)
+    add_points(train_files, 'o')
+    add_points(train_files, 'x')
     plt.gray()
     x1,x2,y1,y2 = plt.axis()
     plt.axis((0,x2,0,y2))
@@ -55,9 +57,6 @@ def plot_resolutions(res_dict, name):
     plt.clf()
 print 'Plotting resolutions: '
 print '  Female...'
-plot_resolutions(get_resolution_counts(female_all), 'female_resolutions.png')
+plot_resolutions(female_train, female_test, 'female_resolutions.png')
 print '  Male...'
-plot_resolutions(get_resolution_counts(male_all), 'male_resolutions.png')
-
-
-print 'Done.'
+plot_resolutions(male_train, male_test, 'male_resolutions.png')

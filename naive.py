@@ -1,6 +1,7 @@
-import os, json, shutil, cv2
+import sys, os, json, shutil, cv2
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
+from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
@@ -11,6 +12,7 @@ img_dir = './data/img'
 meta_dir = './data/meta'
 train_dir = './data/train'
 test_dir = './data/test'
+weights_dir = './models/naive'
 
 # Get metadata (removes duplicates)
 def get_gender_metadata(file):
@@ -68,6 +70,10 @@ model.add(Activation('sigmoid'))
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
+load_weights = (len(sys.argv) == 2)
+if load_weights:
+    print 'Loading weights', sys.argv[1]
+    model.load_weights(sys.argv[1])
 
 # this is the augmentation configuration we will use for training
 train_datagen = ImageDataGenerator(
@@ -98,12 +104,19 @@ class_weight = {
     train_generator.class_indices['male']: float(len(female_train))/float(len(male_train))
 }
 
+# checkpointing
+if not os.path.exists(weights_dir):
+    os.makedirs(weights_dir)
+checkpoint = ModelCheckpoint(os.path.join(weights_dir, 'naive-{epoch:02d}-{val_acc:.2f}.h5'), monitor='val_acc', verbose=1, save_best_only=False, mode='max')
+callbacks_list = [checkpoint]
+
 model.fit_generator(
     train_generator,
     steps_per_epoch=nb_train_samples // batch_size,
     epochs=epochs,
     validation_data=test_generator,
     validation_steps=nb_test_samples // batch_size,
-    class_weight=class_weight)
+    class_weight=class_weight,
+    callbacks=callbacks_list)
 
 model.save_weights('naive.h5')
