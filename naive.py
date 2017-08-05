@@ -1,5 +1,4 @@
-import sys, os, json, shutil, cv2
-import numpy as np
+import os
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential
@@ -7,116 +6,154 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras import backend as K
 
-# Global
-img_dir = './data/img'
-meta_dir = './data/meta'
-train_dir = './data/train'
-test_dir = './data/test'
-weights_dir = './models/naive'
+class NaiveModel(object):
+    """Simple convolutional model
 
-# Get metadata (removes duplicates)
-def get_gender_metadata(file):
-    with open(file) as x:
-        data = json.load(x)
-        return [os.path.join(img_dir, f) for f in set(data['female'])], [os.path.join(img_dir, f) for f in set(data['male'])]
-female_train, male_train = get_gender_metadata(os.path.join(meta_dir, 'train.json'))
-female_test, male_test = get_gender_metadata(os.path.join(meta_dir, 'test.json'))
-train_all = female_train + male_train
-test_all = female_test + male_test
+    Attributes:
+        model (Keras model): Keras model
+        model_dir (str): Model directory
+        name (str): Name of model
+        img_width (int): Image width
+        img_height (int): Image height
+    """
 
-# Copy files into respective directories
-def copy_files(files, directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    for file in files:
-        shutil.copy2(file, directory)
-copy_files(female_train, os.path.join(train_dir, 'female'))
-copy_files(female_test, os.path.join(test_dir, 'female'))
-copy_files(male_train, os.path.join(train_dir, 'male'))
-copy_files(male_test, os.path.join(test_dir, 'male'))
+    def __init__(self, model_dir, name='naive', img_width=150, img_height=150):
+        """Create model
 
-# dimensions of our images.
-img_width, img_height = 150, 150
-nb_train_samples = len(train_all)
-nb_test_samples = len(test_all)
-epochs = 50
-batch_size = 16
+        Args:
+            model_dir (str): Model directory
+            name (str): Name of model
+            img_width (int): Image width
+            img_height (int): Image height
+        """
+        self.model_dir = model_dir
+        self.name = name
+        self.img_width = img_width
+        self.img_height = img_height
+        if K.image_data_format() == 'channels_first':
+            input_shape = (3, img_width, img_height)
+        else:
+            input_shape = (img_width, img_height, 3)
 
-if K.image_data_format() == 'channels_first':
-    input_shape = (3, img_width, img_height)
-else:
-    input_shape = (img_width, img_height, 3)
+        self.model = Sequential()
+        self.model.add(Conv2D(32, (3, 3), input_shape=input_shape))
+        self.model.add(Activation('relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Conv2D(32, (3, 3)))
+        self.model.add(Activation('relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Conv2D(64, (3, 3)))
+        self.model.add(Activation('relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Flatten())
+        self.model.add(Dense(64))
+        self.model.add(Activation('relu'))
+        self.model.add(Dropout(0.5))
+        self.model.add(Dense(1))
+        self.model.add(Activation('sigmoid'))
+        self.model.compile(
+            loss = 'binary_crossentropy',
+            optimizer = 'adam',
+            metrics = ['accuracy']
+        )
 
-model = Sequential()
-model.add(Conv2D(32, (3, 3), input_shape=input_shape))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
+    def save(self):
+        """Saves the model"""
+        self.model.save_weights(os.path.join(self.model_dir, self.name+'naive.h5'))
 
-model.add(Conv2D(32, (3, 3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
+    def load(self):
+        """Loads the model"""
+        self.model.load_weights(os.path.join(self.model_dir, self.name+'.h5'))
 
-model.add(Conv2D(64, (3, 3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
+    def train(self, train_dir, test_dir, epochs=50, batch_size=16, class_weight=None):
+        """Trains the model
 
-model.add(Flatten())
-model.add(Dense(64))
-model.add(Activation('relu'))
-model.add(Dropout(0.5))
-model.add(Dense(1))
-model.add(Activation('sigmoid'))
+        Args:
+            train_dir (str): Directory with training images (organized into classes)
+            test_dir (str): Directory with testing images (organized into classes)
+            epochs (int): Number of epochs
+            batch_size (int): Batch size
+            class_weights (dict): Dictionary with class weights
+        """
+        # Data augmentation for training
+        train_datagen = ImageDataGenerator(
+            rescale = 1./255,
+            shear_range = 0.2,
+            zoom_range = 0.2,
+            channel_shift_range = 0.2,
+            horizontal_flip = True
+        )
+        train_generator = train_datagen.flow_from_directory(
+            train_dir,
+            target_size = (self.img_width, self.img_height),
+            batch_size = batch_size,
+            class_mode = 'binary'
+        )
 
-model.compile(loss='binary_crossentropy',
-              optimizer='adam',
-              metrics=['accuracy'])
-load_weights = (len(sys.argv) == 2)
-if load_weights:
-    print 'Loading weights', sys.argv[1]
-    model.load_weights(sys.argv[1])
+        # No data augmentation for testing
+        test_datagen = ImageDataGenerator(rescale = 1./255)
+        test_generator = test_datagen.flow_from_directory(
+            test_dir,
+            target_size = (self.img_width, self.img_height),
+            batch_size = batch_size,
+            class_mode = 'binary'
+        )
 
-# this is the augmentation configuration we will use for training
-train_datagen = ImageDataGenerator(
-    rescale=1. / 255,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True)
+        # Checkpointing
+        checkpoint = ModelCheckpoint(
+            os.path.join(self.model_dir, self.name+'-{epoch:02d}-{val_acc:.2f}.h5'),
+            monitor = 'val_acc',
+            verbose = 1,
+            save_best_only = False,
+            mode = 'max'
+        )
+        callbacks_list = [checkpoint]
 
-# this is the augmentation configuration we will use for testing:
-# only rescaling
-test_datagen = ImageDataGenerator(rescale=1. / 255)
+        # Fit
+        self.model.fit_generator(
+            train_generator,
+            steps_per_epoch = train_generator.samples // batch_size,
+            epochs = epochs,
+            validation_data = test_generator,
+            validation_steps = test_generator.samples // batch_size,
+            class_weight = class_weight,
+            callbacks = callbacks_list
+        )
 
-train_generator = train_datagen.flow_from_directory(
-    train_dir,
-    target_size=(img_width, img_height),
-    batch_size=batch_size,
-    class_mode='binary')
+    def evaluate(self, dir, batch_size=16):
+        """Evaluated using the model
 
-test_generator = test_datagen.flow_from_directory(
-    test_dir,
-    target_size=(img_width, img_height),
-    batch_size=batch_size,
-    class_mode='binary')
+        Args:
+            dir (str): Directory with images to evaluate (organized into classes)
+            batch_size (int): Batch size
 
-# class weights to balance training
-class_weight = {
-    train_generator.class_indices['female'] : 1.,
-    train_generator.class_indices['male']: float(len(female_train))/float(len(male_train))
-}
+        Returns:
+            np.array: Numpy array with losses
+        """
+        datagen = ImageDataGenerator(rescale = 1./255)
+        generator = datagen.flow_from_directory(
+            dir,
+            target_size = (self.img_width, self.img_height),
+            batch_size = batch_size,
+            class_mode = 'binary'
+        )
+        return generator
 
-# checkpointing
-if not os.path.exists(weights_dir):
-    os.makedirs(weights_dir)
-checkpoint = ModelCheckpoint(os.path.join(weights_dir, 'naive-{epoch:02d}-{val_acc:.2f}.h5'), monitor='val_acc', verbose=1, save_best_only=False, mode='max')
-callbacks_list = [checkpoint]
+    def predict(self, dir, batch_size=16):
+        """Predicts using the model
 
-model.fit_generator(
-    train_generator,
-    steps_per_epoch=nb_train_samples // batch_size,
-    epochs=epochs,
-    validation_data=test_generator,
-    validation_steps=nb_test_samples // batch_size,
-    class_weight=class_weight,
-    callbacks=callbacks_list)
+        Args:
+            dir (str): Directory with images to predict
+            batch_size (int): Batch size
 
-model.save_weights('naive.h5')
+        Returns:
+            np.array: Numpy array with predictions
+        """
+        datagen = ImageDataGenerator(rescale = 1./255)
+        generator = predict_datagen.flow_from_directory(
+            dir,
+            target_size = (self.img_width, self.img_height),
+            batch_size = batch_size,
+            class_mode = 'binary'
+        )
+        return generator

@@ -1,11 +1,9 @@
-import os, json, cv2
+"""Compute some stats"""
+
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Global
-data_dir = './data'
-img_dir = os.path.join(data_dir, 'img')
-meta_dir = os.path.join(data_dir, 'meta')
+from helpers import *
 
 # Count files
 n_files = lambda x: len([f for f in os.listdir(x) if os.path.isfile(os.path.join(x, f))])
@@ -13,13 +11,8 @@ print 'File count: '
 print '  Female: %d' % n_files(os.path.join(img_dir, 'female'))
 print '  Male: %d' % n_files(os.path.join(img_dir, 'male'))
 
-# Get metadata (removes duplicates)
-def get_gender_metadata(file):
-    with open(file) as x:
-        data = json.load(x)
-        return [os.path.join(img_dir, f) for f in set(data['female'])], [os.path.join(img_dir, f) for f in set(data['male'])]
-female_train, male_train = get_gender_metadata(os.path.join(meta_dir, 'train.json'))
-female_test, male_test = get_gender_metadata(os.path.join(meta_dir, 'test.json'))
+# Get data
+female_train, female_test, male_train, male_test = get_data()
 female_all = female_train + female_test
 male_all = male_train + male_test
 print 'Metadata count: '
@@ -34,7 +27,7 @@ print '  Male: %d non-existent files' % (n_bad_files(male_all))
 
 # Plot resolutions
 def plot_resolutions(train_files, test_files, name):
-    def add_points(files, marker):
+    def add_points(files, color, marker):
         res_dict = {}
         for file in files:
             res = cv2.imread(file).shape
@@ -45,10 +38,9 @@ def plot_resolutions(train_files, test_files, name):
             heights.append(height)
             widths.append(width)
             counts.append(count)
-        plt.scatter(heights, widths, c=counts, marker=marker)
-    add_points(train_files, 'o')
-    add_points(train_files, 'x')
-    plt.gray()
+        plt.scatter(heights, widths, c=counts, color=color, marker=marker, alpha=.4)
+    add_points(train_files, 'b', '^')
+    add_points(test_files, 'r', 's')
     x1,x2,y1,y2 = plt.axis()
     plt.axis((0,x2,0,y2))
     plt.xlabel('height')
