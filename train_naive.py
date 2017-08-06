@@ -16,5 +16,7 @@ class_weight = {
 
 # Train
 model = NaiveModel(tmp_dir, 'naive', img_width, img_height)
+if len(sys.argv) == 2:
+    model.load(sys.argv[1])
 model.train(train_dir, test_dir, epochs, batch_size, class_weight)
 model.save(os.path.join(results_dir, 'naive.h5'))

@@ -68,7 +68,6 @@ class NaiveModel(Model):
             rescale = 1./255,
             shear_range = 0.2,
             zoom_range = 0.2,
-            channel_shift_range = 0.2,
             horizontal_flip = True
         )
         train_generator = train_datagen.flow_from_directory(

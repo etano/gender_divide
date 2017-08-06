@@ -4,10 +4,14 @@ import shutil
 from helpers import *
 
 # Make directories
-os.makedirs(train_dir)
-os.makedirs(test_dir)
-os.makedirs(results_dir)
-os.makedirs(tmp_dir)
+if not os.path.exists(train_dir):
+    os.makedirs(train_dir)
+if not os.path.exists(test_dir):
+    os.makedirs(test_dir)
+if not os.path.exists(results_dir):
+    os.makedirs(results_dir)
+if not os.path.exists(tmp_dir):
+    os.makedirs(tmp_dir)
 
 # Copy files into directory structure
 female_train, female_test, male_train, male_test = get_data()
