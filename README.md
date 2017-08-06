@@ -68,10 +68,39 @@ Resolutions are determined via Python's OpenCV wrapper. We plot them here:
 
 ## NaiveCNN
 
+To train:
+
+    python train.py naive_cnn
+
+To evaluate:
+
+    python evaluate.py naive_cnn
+
 ## VGG16
 
 ### Top layer only
 
+To train:
+
+    python train.py vgg16
+
+To evaluate:
+
+    python evaluate.py vgg16
+
 ### Top layer and last CNN layer
 
 # Extensions
+
+- pre-classification into people and objects
+- ensembling
+  - multiple models
+  - multiple inputs from same input (via data augmentation)
+- knobs:
+  - data augmentation (rotation, zoom, channel shifts, etc.)
+  - dropout
+  - regularization
+  - resolution
+- more data
+  - amazon data
+  - other web scraping (e.g. google images)
