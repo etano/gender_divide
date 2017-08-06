@@ -81,11 +81,11 @@ To evaluate:
 | female | 294          | 76         |
 | male   | 73           | 21         |
 
-accuracy: 0.678879310345
-female precision: 0.794594594595
-male precision: 0.223404255319
-female recall: 0.801089918256
-male recall: 0.216494845361
+- accuracy: 0.678879310345
+- female precision: 0.794594594595
+- male precision: 0.223404255319
+- female recall: 0.801089918256
+- male recall: 0.216494845361
 
 ## VGG16 (top layer only)
 
@@ -94,11 +94,11 @@ male recall: 0.216494845361
 | female | 330          | 40         |
 | male   | 40           | 57         |
 
-accuracy: 0.82869379015
-female precision: 0.891891891892
-male precision: 0.587628865979
-female recall: 0.891891891892
-male recall: 0.587628865979
+- accuracy: 0.82869379015
+- female precision: 0.891891891892
+- male precision: 0.587628865979
+- female recall: 0.891891891892
+- male recall: 0.587628865979
 
 # Extensions
 
