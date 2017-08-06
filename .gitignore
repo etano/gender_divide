@@ -104,3 +104,6 @@ ENV/
 *.swp
 *.jpg
 *.npy
+*.zip
+data/
+tmp/

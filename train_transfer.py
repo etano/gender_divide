@@ -5,13 +5,13 @@ from models import TransferModel
 # Settings
 epochs = 100
 batch_size = 16
-img_width, img_height = 150, 150
+img_width, img_height = 224, 224
 
 # Get class weights
 female_train, female_test, male_train, male_test = get_data()
 class_weight = {
-    0: 1.,
-    1: float(len(female_train))/float(len(male_train))
+    0: float(len(male_train))/float(len(female_train)),
+    1: 1.
 }
 
 # Train
