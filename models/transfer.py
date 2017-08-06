@@ -51,11 +51,11 @@ class TransferModel(Model):
             zoom_range = 0.2,
             horizontal_flip = True
         )
-        features_file, labels_file = self.save_bottleneck_features(train_dir, 'train', train_datagen)
+        filenames_file, features_file, labels_file = self.save_bottleneck_features(train_dir, 'train', train_datagen)
         train_data = np.load(open(features_file))
         train_labels = np.load(open(labels_file))
 
-        features_file, labels_file = self.save_bottleneck_features(test_dir, 'test')
+        filenames_file, features_file, labels_file = self.save_bottleneck_features(test_dir, 'test')
         test_data = np.load(open(features_file))
         test_labels = np.load(open(labels_file))
 
