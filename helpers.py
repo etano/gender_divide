@@ -7,7 +7,8 @@ img_dir = './data/img'
 meta_dir = './data/meta'
 train_dir = './data/train'
 test_dir = './data/test'
-weights_dir = './models'
+results_dir = './results'
+tmp_dir = './tmp'
 
 # Get metadata (removes duplicates)
 def get_gender_metadata(dir, file):

@@ -11,22 +11,22 @@ class NaiveModel(object):
 
     Attributes:
         model (Keras model): Keras model
-        model_dir (str): Model directory
+        weights_dir (str): Weights directory
         name (str): Name of model
         img_width (int): Image width
         img_height (int): Image height
     """
 
-    def __init__(self, model_dir, name='naive', img_width=150, img_height=150):
+    def __init__(self, weights_dir, name='naive', img_width=150, img_height=150):
         """Create model
 
         Args:
-            model_dir (str): Model directory
+            weights_dir (str): Weights directory
             name (str): Name of model
             img_width (int): Image width
             img_height (int): Image height
         """
-        self.model_dir = model_dir
+        self.weights_dir = weights_dir
         self.name = name
         self.img_width = img_width
         self.img_height = img_height
@@ -64,7 +64,7 @@ class NaiveModel(object):
             file (str): File name
         """
         if file == None:
-            file = os.path.join(self.model_dir, self.name+'naive.h5')
+            file = os.path.join(self.weights_dir, self.name+'naive.h5')
         self.model.save_weights(file)
 
     def load(self, file=None):
@@ -74,7 +74,7 @@ class NaiveModel(object):
             file (str): File name
         """
         if file == None:
-            file = os.path.join(self.model_dir, self.name+'naive.h5')
+            file = os.path.join(self.weights_dir, self.name+'naive.h5')
         self.model.load_weights(file)
 
     def train(self, train_dir, test_dir, epochs=50, batch_size=16, class_weight=None):
@@ -113,7 +113,7 @@ class NaiveModel(object):
 
         # Checkpointing
         checkpoint = ModelCheckpoint(
-            os.path.join(self.model_dir, self.name+'-{epoch:02d}-{val_acc:.2f}.h5'),
+            os.path.join(self.weights_dir, self.name+'-{epoch:02d}-{val_acc:.2f}.h5'),
             monitor = 'val_acc',
             verbose = 1,
             save_best_only = False,

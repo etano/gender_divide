@@ -49,6 +49,6 @@ def plot_resolutions(train_files, test_files, name):
     plt.clf()
 print 'Plotting resolutions: '
 print '  Female...'
-plot_resolutions(female_train, female_test, 'female_resolutions.png')
+plot_resolutions(female_train, female_test, os.path.join(results_dir, 'female_resolutions.png'))
 print '  Male...'
-plot_resolutions(male_train, male_test, 'male_resolutions.png')
+plot_resolutions(male_train, male_test, os.path.join(results_dir, 'male_resolutions.png'))
