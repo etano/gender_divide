@@ -93,14 +93,20 @@ To evaluate:
 # Extensions
 
 - pre-classification into people and objects
+- retrain VGG16 layers
+- classifier after feature selection
+  - SVM
+  - random forest
+  - etc.
 - ensembling
   - multiple models
   - multiple inputs from same input (via data augmentation)
-- knobs:
+- knobs
   - data augmentation (rotation, zoom, channel shifts, etc.)
   - dropout
   - regularization
   - resolution
+  - learning rate (momentum, etc.)
 - more data
   - amazon data
   - other web scraping (e.g. google images)
