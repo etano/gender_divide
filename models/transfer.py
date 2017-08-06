@@ -15,7 +15,7 @@ class TransferModel(Model):
         img_height (int): Image height
     """
 
-    def __init__(self, weights_dir, name='naive', img_width=150, img_height=150):
+    def __init__(self, weights_dir, name='naive', img_width=150, img_height=150, model_type="VGG16"):
         """Create model
 
         Args:
@@ -27,12 +27,17 @@ class TransferModel(Model):
         super(TransferModel, self).__init__(weights_dir, name, img_width, img_height)
 
         self.bottleneck_model = applications.VGG16(include_top=False, weights='imagenet')
+        dummy_img = np.zeros((1,img_width, img_height, 3))
+        features = self.bottleneck_model.predict(dummy_img, batch_size=1)
+
         self.model = Sequential()
-        self.model.add(Flatten(input_shape=(4, 4, self.bottleneck_model.output_shape[-1])))
-        self.model.add(Dense(256, activation='relu'))
+        self.model.add(Flatten(input_shape=features.shape[1:]))
+        self.model.add(Dense(128, activation='relu'))
         self.model.add(Dropout(0.5))
         self.model.add(Dense(1, activation='sigmoid'))
         self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+        self.suffix = '_'+str(self.img_width)+'_'+str(self.img_height)+'_'+model_type
 
     def train(self, train_dir, test_dir, epochs=50, batch_size=16, class_weight=None):
         """Trains the model
@@ -51,11 +56,11 @@ class TransferModel(Model):
             zoom_range = 0.2,
             horizontal_flip = True
         )
-        filenames_file, features_file, labels_file = self.save_bottleneck_features(train_dir, 'train', train_datagen)
+        filenames_file, features_file, labels_file = self.save_bottleneck_features(train_dir, 'train'+self.suffix, train_datagen)
         train_data = np.load(open(features_file))
         train_labels = np.load(open(labels_file))
 
-        filenames_file, features_file, labels_file = self.save_bottleneck_features(test_dir, 'test')
+        filenames_file, features_file, labels_file = self.save_bottleneck_features(test_dir, 'test'+self.suffix)
         test_data = np.load(open(features_file))
         test_labels = np.load(open(labels_file))
 
@@ -78,7 +83,7 @@ class TransferModel(Model):
         Returns:
             list(list(str, int, np.array)): List of (filename, class, prediction) lists
         """
-        filenames_file, features_file, labels_file = self.save_bottleneck_features(dir, 'predict')
+        filenames_file, features_file, labels_file = self.save_bottleneck_features(dir, 'predict'+self.suffix)
         filenames = np.load(open(filenames_file))
         features = np.load(open(features_file))
         labels = np.load(open(labels_file))

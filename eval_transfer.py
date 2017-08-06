@@ -5,7 +5,7 @@ from models import TransferModel
 # Settings
 name = 'transfer'
 batch_size = 16
-img_width, img_height = 150, 150
+img_width, img_height = 224, 224
 
 # Predict
 model = TransferModel(tmp_dir, name, img_width, img_height)
