@@ -8,6 +8,7 @@ img_dir = './data/img'
 meta_dir = './data/meta'
 train_dir = './data/train'
 test_dir = './data/test'
+amazon_dir = './data/amazon'
 results_dir = './results'
 tmp_dir = './tmp'
 
