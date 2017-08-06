@@ -45,7 +45,13 @@ class TransferModel(Model):
             class_weights (dict): Dictionary with class weights
         """
 
-        features_file, labels_file = self.save_bottleneck_features(train_dir, 'train')
+        train_datagen = ImageDataGenerator(
+            rescale = 1./255,
+            shear_range = 0.2,
+            zoom_range = 0.2,
+            horizontal_flip = True
+        )
+        features_file, labels_file = self.save_bottleneck_features(train_dir, 'train', train_datagen)
         train_data = np.load(open(features_file))
         train_labels = np.load(open(labels_file))
 
