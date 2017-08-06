@@ -5,7 +5,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras import backend as K
 
-class NaiveModel(Model):
+class NaiveCNN(Model):
     """Simple convolutional model
 
     Attributes:
@@ -25,7 +25,7 @@ class NaiveModel(Model):
             img_width (int): Image width
             img_height (int): Image height
         """
-        super(NaiveModel, self).__init__(weights_dir, name, img_width, img_height)
+        super(NaiveCNN, self).__init__(weights_dir, name, img_width, img_height)
         if K.image_data_format() == 'channels_first':
             input_shape = (3, img_width, img_height)
         else:

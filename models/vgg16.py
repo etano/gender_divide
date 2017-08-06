@@ -3,8 +3,8 @@ from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense
 from keras import applications
 
-class TransferModel(Model):
-    """Transfer learning model (train on bottleneck features)
+class VGG16(Model):
+    """Transfer learning model starting from VGG16 (train on bottleneck features)
 
     Attributes:
         model (Keras model): Keras model
@@ -13,9 +13,10 @@ class TransferModel(Model):
         name (str): Name of model
         img_width (int): Image width
         img_height (int): Image height
+        suffix (str): Suffix for all saved files
     """
 
-    def __init__(self, weights_dir, name='naive', img_width=150, img_height=150, model_type="VGG16"):
+    def __init__(self, weights_dir, name='vgg16', img_width=224, img_height=224):
         """Create model
 
         Args:
@@ -24,7 +25,7 @@ class TransferModel(Model):
             img_width (int): Image width
             img_height (int): Image height
         """
-        super(TransferModel, self).__init__(weights_dir, name, img_width, img_height)
+        super(VGG16, self).__init__(weights_dir, name, img_width, img_height)
 
         self.bottleneck_model = applications.VGG16(include_top=False, weights='imagenet')
         dummy_img = np.zeros((1,img_width, img_height, 3))
@@ -37,7 +38,7 @@ class TransferModel(Model):
         self.model.add(Dense(1, activation='sigmoid'))
         self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-        self.suffix = '_'+str(self.img_width)+'_'+str(self.img_height)+'_'+model_type
+        self.suffix = self.name+'_'+str(self.img_width)+'_'+str(self.img_height)
 
     def train(self, train_dir, test_dir, epochs=50, batch_size=16, class_weight=None):
         """Trains the model

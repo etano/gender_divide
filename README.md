@@ -35,6 +35,10 @@ Data is found at https://storage.cloud.google.com/fw-share/20170803-fw-gender-cl
     unzip 20170803-fw-gender-classification-data.zip
     mv data-v2 data
 
+Finally to reorganize data and create directory structure:
+
+    python setup.py
+
 # Dataset
 
 ## Description
@@ -59,3 +63,15 @@ Resolutions are determined via Python's OpenCV wrapper. We plot them here:
 ### Male
 
 ![Male resolutions](male_resolutions.png)
+
+# Models
+
+## NaiveCNN
+
+## VGG16
+
+### Top layer only
+
+### Top layer and last CNN layer
+
+# Extensions

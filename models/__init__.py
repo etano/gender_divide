@@ -1,2 +1,2 @@
-from naive import *
-from transfer import *
+from naive_cnn import *
+from vgg16 import *
