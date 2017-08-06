@@ -3,7 +3,7 @@ from helpers import *
 from models import NaiveModel
 
 # Settings
-epochs = 50
+epochs = 100
 batch_size = 16
 img_width, img_height = 150, 150
 
