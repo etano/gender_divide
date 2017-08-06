@@ -6,11 +6,6 @@ from models import NaiveCNN, VGG16
 name = sys.argv[1]
 checkpoint = sys.argv[2] if len(sys.argv) > 2 else None
 
-# Settings
-epochs = 100
-batch_size = 16
-img_width, img_height = 224, 224
-
 # Get class weights
 female_train, female_test, male_train, male_test = get_data()
 class_weight = {
@@ -20,12 +15,12 @@ class_weight = {
 
 # Train
 if name == 'naive_cnn':
-    model = NaiveCNN(tmp_dir, name, img_width, img_height)
+    model = NaiveCNN(tmp_dir, name)
 elif name == 'vgg16':
-    model = VGG16(tmp_dir, name, img_width, img_height)
+    model = VGG16(tmp_dir, name)
 else:
     raise NotImplementedError('Model '+name+' not implemented!')
 if checkpoint != None:
     model.load(checkpoint)
-model.train(train_dir, test_dir, epochs, batch_size, class_weight)
+model.train(train_dir, test_dir, class_weight=class_weight)
 model.save(os.path.join(results_dir, name+'.h5'))
