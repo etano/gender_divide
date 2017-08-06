@@ -1,12 +1,11 @@
-import os
-from keras.preprocessing.image import ImageDataGenerator
+from model import *
 from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras import backend as K
 
-class NaiveModel(object):
+class NaiveModel(Model):
     """Simple convolutional model
 
     Attributes:
@@ -26,10 +25,7 @@ class NaiveModel(object):
             img_width (int): Image width
             img_height (int): Image height
         """
-        self.weights_dir = weights_dir
-        self.name = name
-        self.img_width = img_width
-        self.img_height = img_height
+        super(NaiveModel, self).__init__(weights_dir, name, img_width, img_height)
         if K.image_data_format() == 'channels_first':
             input_shape = (3, img_width, img_height)
         else:
@@ -56,26 +52,6 @@ class NaiveModel(object):
             optimizer = 'adam',
             metrics = ['accuracy']
         )
-
-    def save(self, file=None):
-        """Saves the model
-
-        Args:
-            file (str): File name
-        """
-        if file == None:
-            file = os.path.join(self.weights_dir, self.name+'naive.h5')
-        self.model.save_weights(file)
-
-    def load(self, file=None):
-        """Loads the model
-
-        Args:
-            file (str): File name
-        """
-        if file == None:
-            file = os.path.join(self.weights_dir, self.name+'naive.h5')
-        self.model.load_weights(file)
 
     def train(self, train_dir, test_dir, epochs=50, batch_size=16, class_weight=None):
         """Trains the model
@@ -130,48 +106,4 @@ class NaiveModel(object):
             validation_steps = test_generator.samples // batch_size,
             class_weight = class_weight,
             callbacks = callbacks_list
-        )
-
-    def evaluate(self, dir, batch_size=16):
-        """Evaluated using the model
-
-        Args:
-            dir (str): Directory with images to evaluate (organized into classes)
-            batch_size (int): Batch size
-
-        Returns:
-            np.array: Numpy array with losses
-        """
-        datagen = ImageDataGenerator(rescale = 1./255)
-        generator = datagen.flow_from_directory(
-            dir,
-            target_size = (self.img_width, self.img_height),
-            batch_size = batch_size,
-            class_mode = 'binary'
-        )
-        return self.model.evaluate_generator(
-            generator,
-            generator.samples // batch_size
-        )
-
-    def predict(self, dir, batch_size=16):
-        """Predicts using the model
-
-        Args:
-            dir (str): Directory with images to predict
-            batch_size (int): Batch size
-
-        Returns:
-            np.array: Numpy array with predictions
-        """
-        datagen = ImageDataGenerator(rescale = 1./255)
-        generator = datagen.flow_from_directory(
-            dir,
-            target_size = (self.img_width, self.img_height),
-            batch_size = batch_size,
-            class_mode = 'binary'
-        )
-        return self.model.predict_generator(
-            generator,
-            generator.samples // batch_size
         )
