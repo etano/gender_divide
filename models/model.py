@@ -60,28 +60,6 @@ class Model(object):
         """
         raise NotImplementedError("Subclasses should implement this!")
 
-    def evaluate(self, dir, batch_size=16):
-        """Evaluated using the model
-
-        Args:
-            dir (str): Directory with images to evaluate (organized into classes)
-            batch_size (int): Batch size
-
-        Returns:
-            np.array: Numpy array with losses
-        """
-        datagen = ImageDataGenerator(rescale = 1./255)
-        generator = datagen.flow_from_directory(
-            dir,
-            target_size = (self.img_width, self.img_height),
-            batch_size = batch_size,
-            class_mode = 'binary'
-        )
-        return self.model.evaluate_generator(
-            generator,
-            generator.samples // batch_size
-        )
-
     def predict(self, dir, batch_size=16):
         """Predicts using the model
 
@@ -90,16 +68,6 @@ class Model(object):
             batch_size (int): Batch size
 
         Returns:
-            np.array: Numpy array with predictions
+            list(list(str, int, np.array)): List of (filename, class, prediction) lists
         """
-        datagen = ImageDataGenerator(rescale = 1./255)
-        generator = datagen.flow_from_directory(
-            dir,
-            target_size = (self.img_width, self.img_height),
-            batch_size = batch_size,
-            class_mode = 'binary'
-        )
-        return self.model.predict_generator(
-            generator,
-            generator.samples // batch_size
-        )
+        raise NotImplementedError("Subclasses should implement this!")

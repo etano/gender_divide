@@ -106,3 +106,26 @@ class NaiveModel(Model):
             class_weight = class_weight,
             callbacks = callbacks_list
         )
+
+    def predict(self, dir, batch_size=16):
+        """Predicts using the model
+
+        Args:
+            dir (str): Directory with images to predict
+            batch_size (int): Batch size
+
+        Returns:
+            list(list(str, int, np.array)): List of (filename, class, prediction) lists
+        """
+        datagen = ImageDataGenerator(rescale = 1./255)
+        generator = datagen.flow_from_directory(
+            dir,
+            target_size = (self.img_width, self.img_height),
+            batch_size = batch_size,
+            class_mode = 'binary'
+        )
+        predictions = self.model.predict_generator(
+            generator,
+            generator.samples // batch_size
+        )
+        return zip(generator.filenames, generator.classes, predictions)

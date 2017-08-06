@@ -68,6 +68,28 @@ class TransferModel(Model):
             class_weight = class_weight
         )
 
+    def predict(self, dir, batch_size=16):
+        """Predicts using the model
+
+        Args:
+            dir (str): Directory with images to predict
+            batch_size (int): Batch size
+
+        Returns:
+            list(list(str, int, np.array)): List of (filename, class, prediction) lists
+        """
+        filenames_file, features_file, labels_file = self.save_bottleneck_features(dir, 'predict')
+        filenames = np.load(open(filenames_file))
+        features = np.load(open(features_file))
+        labels = np.load(open(labels_file))
+
+        predictions = self.model.predict(
+            features,
+            batch_size = batch_size
+        )
+
+        return zip(filenames, labels, predictions)
+
     def save_bottleneck_features(self, dir, suffix, datagen=ImageDataGenerator(rescale=1./255), overwrite=False):
         """Saves features coming from the bottleneck model
 
@@ -78,13 +100,15 @@ class TransferModel(Model):
             overwrite (bool): Whether or not to overwrite existing files
 
         Returns:
+            str: Path of filenames file
             str: Path of features file
             str: Path of labels file
         """
+        filenames_file = os.path.join(self.weights_dir, 'bottleneck_filenames_'+suffix+'.npy')
         features_file = os.path.join(self.weights_dir, 'bottleneck_features_'+suffix+'.npy')
         labels_file = os.path.join(self.weights_dir, 'bottleneck_labels_'+suffix+'.npy')
 
-        if overwrite or (not os.path.exists(features_file)) or (not os.path.exists(labels_file)):
+        if overwrite or (not os.path.exists(filenames_file)) or (not os.path.exists(features_file)) or (not os.path.exists(labels_file)):
             generator = datagen.flow_from_directory(
                 dir,
                 target_size = (self.img_width, self.img_height),
@@ -92,9 +116,11 @@ class TransferModel(Model):
                 class_mode = None,
                 shuffle = False
             )
+            filenames = generator.filenames
             features = self.bottleneck_model.predict_generator(generator, generator.samples)
             labels = generator.classes
+            np.save(open(filenames_file, 'w'), filenames)
             np.save(open(features_file, 'w'), features)
             np.save(open(labels_file, 'w'), labels)
 
-        return features_file, labels_file
+        return filenames_file, features_file, labels_file
