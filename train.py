@@ -12,6 +12,7 @@ class_weight = {
     0: float(len(male_train))/float(len(female_train)),
     1: 1.
 }
+print class_weight
 
 # Train
 if name == 'naive_cnn':

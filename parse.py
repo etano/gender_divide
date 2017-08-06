@@ -1,6 +1,6 @@
 """Parses Amazon product metadata found at http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/meta_Clothing_Shoes_and_Jewelry.json.gz"""
 
-import sys, os, yaml, csv, urllib
+import sys, os, yaml, csv, urllib, tqdm
 try:
     from yaml import CLoader as Loader
 except ImportError:
@@ -19,7 +19,7 @@ def get_files_to_download(filename, target_dir):
         count, good, bad = 0, 0, 0
         for line in f:
             count += 1
-            if not (count % 100):
+            if not (count % 10000):
                 print "count:", count, "good:", good, ", bad:", bad
             if ("'imUrl':" in line) and ("'categories':" in line):
                 try:
@@ -40,22 +40,15 @@ def get_files_to_download(filename, target_dir):
                     print line
                     print e
                     bad += 1
-        print "good:", good, ", bad:", bad
+    return files
 
-def download_files(files):
-    count, good, bad = 0, 0, 0
-    for [url, file] in files:
-       count += 1
-       if not (count % 100):
-           print "count:", count, "good:", good, ", bad:", bad
-       try:
-           if not os.path.exists(file):
-               urllib.urlretrieve(url, file)
-           good += 1
-       except Exception as e:
-           print line
-           print e
-           bad += 1
+def download_file(file):
+    [url, dst] = file
+    try:
+        if not os.path.exists(dst):
+            urllib.urlretrieve(url, dst)
+    except Exception as e:
+        print url, dst
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -64,5 +57,6 @@ if __name__ == "__main__":
     target_dir = sys.argv[2]
     files = get_files_to_download(filename, target_dir)
 
-    p = Pool(2)
-    p.map(download_files, files)
+    pool = Pool(8)
+    for _ in tqdm.tqdm(pool.imap_unordered(download_file, files), total=len(files)):
+        pass

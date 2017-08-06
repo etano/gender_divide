@@ -1,7 +1,9 @@
 from model import *
 from keras.models import Sequential
-from keras.layers import Dropout, Flatten, Dense
+from keras.layers import Dropout, Flatten, Dense, Activation
 from keras import applications
+from keras.layers.normalization import BatchNormalization
+from keras.layers.advanced_activations import PReLU
 
 class VGG16(Model):
     """Transfer learning model starting from VGG16 (train on bottleneck features)
@@ -33,9 +35,12 @@ class VGG16(Model):
 
         self.model = Sequential()
         self.model.add(Flatten(input_shape=features.shape[1:]))
-        self.model.add(Dense(128, activation='relu'))
+        self.model.add(Dense(256))
+        self.model.add(BatchNormalization())
+        self.model.add(PReLU())
         self.model.add(Dropout(0.5))
-        self.model.add(Dense(1, activation='sigmoid'))
+        self.model.add(Dense(1))
+        self.model.add(Activation('sigmoid'))
         self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
         self.suffix = self.name+'_'+str(self.img_width)+'_'+str(self.img_height)
