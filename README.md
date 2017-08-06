@@ -58,11 +58,11 @@ Resolutions are determined via Python's OpenCV wrapper. We plot them here:
 
 ### Female
 
-![Female resolutions](female_resolutions.png)
+![Female resolutions](results/female_resolutions.png)
 
 ### Male
 
-![Male resolutions](male_resolutions.png)
+![Male resolutions](results/male_resolutions.png)
 
 # Models
 
