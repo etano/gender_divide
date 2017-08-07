@@ -1,6 +1,6 @@
 import sys
 from helpers import *
-from models import NaiveCNN, VGG16
+from models import NaiveCNN, VGG16, VGG16Top
 
 # Inputs
 name = sys.argv[1]
@@ -21,6 +21,8 @@ if model_type == 'naive_cnn':
     model = NaiveCNN(tmp_dir, name)
 elif model_type == 'vgg16':
     model = VGG16(tmp_dir, name)
+elif model_type == 'vgg16_top':
+    model = VGG16Top(tmp_dir, name)
 else:
     raise NotImplementedError('Model '+model_type+' not implemented!')
 if checkpoint != None:
