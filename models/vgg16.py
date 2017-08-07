@@ -43,7 +43,7 @@ class VGG16(Model):
         self.model.add(Activation('sigmoid'))
         self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-        self.suffix = self.name+'_'+str(self.img_width)+'_'+str(self.img_height)
+        self.suffix = '_'+self.name+'_'+str(self.img_width)+'_'+str(self.img_height)
 
     def train(self, train_dir, test_dir, epochs=50, batch_size=16, class_weight=None):
         """Trains the model

@@ -20,14 +20,13 @@ make_directories('./data')
 make_directories('./data/amazon')
 
 # Copy files into directory structure
-def copy_gender_images(data_dir, copy_test):
+def copy_gender_images(data_dir):
     print 'Copying images from', data_dir
     img_dir, meta_dir, train_dir, test_dir = get_directories(data_dir)
     female_train, female_test, male_train, male_test = get_data(data_dir)
     copy_files(female_train, os.path.join(train_dir, 'female'))
     copy_files(male_train, os.path.join(train_dir, 'male'))
-    if copy_test:
-        copy_files(female_test, os.path.join(test_dir, 'female'))
-        copy_files(male_test, os.path.join(test_dir, 'male'))
-copy_gender_images('./data', True)
-copy_gender_images('./data/amazon', False)
+    copy_files(female_test, os.path.join(test_dir, 'female'))
+    copy_files(male_test, os.path.join(test_dir, 'male'))
+copy_gender_images('./data')
+copy_gender_images('./data/amazon')
