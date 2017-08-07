@@ -1,6 +1,6 @@
 import sys
 from helpers import *
-from models import NaiveCNN, VGG16
+from models import NaiveCNN, VGG16, AlwaysFemale
 
 # Inputs
 name = sys.argv[1]
@@ -13,6 +13,8 @@ if model_type == 'naive_cnn':
     model = NaiveCNN(tmp_dir, name)
 elif model_type == 'vgg16':
     model = VGG16(tmp_dir, name)
+elif model_type == 'always_female':
+    model = AlwaysFemale(tmp_dir, name)
 else:
     raise NotImplementedError('Model '+model_type+' not implemented!')
 model.load(checkpoint)
