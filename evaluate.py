@@ -4,16 +4,17 @@ from models import NaiveCNN, VGG16
 
 # Inputs
 name = sys.argv[1]
-test_dir = sys.argv[2]
-checkpoint = sys.argv[3]
+model_type = sys.argv[2]
+data_dir = sys.argv[3]
+checkpoint = sys.argv[4]
 
 # Predict
-if name == 'naive_cnn':
+if model_type == 'naive_cnn':
     model = NaiveCNN(tmp_dir, name)
-elif name == 'vgg16':
+elif model_type == 'vgg16':
     model = VGG16(tmp_dir, name)
 else:
-    raise NotImplementedError('Model '+name+' not implemented!')
+    raise NotImplementedError('Model '+model_type+' not implemented!')
 model.load(checkpoint)
 predictions = model.predict(test_dir)
 

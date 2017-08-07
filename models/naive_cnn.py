@@ -3,6 +3,7 @@ from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
+from keras.callbacks import CSVLogger
 from keras import backend as K
 
 class NaiveCNN(Model):
@@ -88,15 +89,18 @@ class NaiveCNN(Model):
 
         # Checkpointing
         checkpoint = ModelCheckpoint(
-            os.path.join(self.weights_dir, self.name+'-{epoch:02d}-{val_acc:.2f}.h5'),
+            os.path.join(self.weights_dir, self.name+'_{epoch:02d}_{val_acc:.2f}.h5'),
             monitor = 'val_acc',
             verbose = 1,
             save_best_only = False,
             mode = 'max'
         )
-        callbacks_list = [checkpoint]
+
+        # Logging
+        csv_logger = CSVLogger(os.path.join(self.weights_dir, self.name+'_log.csv'), append=True, separator=',')
 
         # Fit
+        callbacks_list = [checkpoint, csv_logger]
         self.model.fit_generator(
             train_generator,
             steps_per_epoch = train_generator.samples // batch_size,

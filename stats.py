@@ -1,9 +1,11 @@
 """Compute some stats"""
 
-import cv2
+import sys, cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from helpers import *
+
+img_dir, meta_dir, train_dir, test_dir = get_directories(sys.argv[1])
 
 # Count files
 n_files = lambda x: len([f for f in os.listdir(x) if os.path.isfile(os.path.join(x, f))])
