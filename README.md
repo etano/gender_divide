@@ -28,6 +28,8 @@ Assuming Ubuntu and root priviledges:
     pip install tensorflow
     pip install opencv-python
     pip install h5py
+    pip install imutils
+    pip install tqdm
 
 
 Data is found at https://storage.cloud.google.com/fw-share/20170803-fw-gender-classification-data.zip. Assuming it is downloaded and in the root directory:

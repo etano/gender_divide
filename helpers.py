@@ -27,7 +27,7 @@ def get_data(data_dir):
     return female_train, female_test, male_train, male_test
 
 # Make directories from list of directories
-def makedirs(base_dir, dirs):
+def make_directories(base_dir, dirs):
     for dir in dirs:
         if not os.path.exists(os.path.join(base_dir, dir)):
             os.makedirs(os.path.join(base_dir, dir))
@@ -42,7 +42,7 @@ def copy_files(files, directory):
 # Evaluate predictions
 def evaluate(name, predictions):
     base_dir = os.path.join(tmp_dir, name)
-    makedirs(base_dir, ['female/female', 'male/male', 'male/female', 'female/male'])
+    make_directories(base_dir, ['female/female', 'male/male', 'male/female', 'female/male'])
     confusion_matrix = np.zeros((2,2))
     for [file, c, p] in predictions:
         if c == 1:

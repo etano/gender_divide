@@ -1,22 +1,27 @@
 import sys, os, json, random
 
 img_dir = sys.argv[1]
-filename = sys.argv[2]
-max_imgs = int(sys.argv[3])
+target_dir = sys.argv[2]
+test_meta = json.load(open(sys.argv[3], 'r'))
+max_imgs = int(sys.argv[4]) if len(sys.argv) > 4 else None
 
-female_imgs = os.listdir(os.path.join(img_dir, 'female'))
-male_imgs = os.listdir(os.path.join(img_dir, 'male'))
-random.shuffle(female_imgs)
-random.shuffle(male_imgs)
+def get_imgs(gender, dir):
+    imgs = []
+    for img in os.listdir(os.path.join(dir, gender)):
+        if not (gender+'/'+img in test_meta[gender]):
+            imgs.append(gender+'/'+img)
+    if max_imgs == None:
+        return imgs
+    else:
+        random.shuffle(imgs)
+        return imgs[:max_imgs]
 
-meta = {'female': [], 'male': []}
+train_meta = {
+    'female': get_imgs('female', img_dir),
+    'male': get_imgs('male', img_dir)
+}
 
-for i in range(max_imgs):
-    meta['female'].append('female/'+female_imgs[i])
-    meta['male'].append('male/'+male_imgs[i])
-
-dir = '/'.join(filename.split('/')[:-1])
-if not os.path.exists(dir):
-    os.makedirs(dir)
-with open(filename, 'w') as f:
-    json.dump(meta, f, indent=4)
+if not os.path.exists(target_dir):
+    os.makedirs(target_dir)
+with open(os.path.join(target_dir, 'train.json'), 'w') as f:
+    json.dump(train_meta, f, indent=4)
