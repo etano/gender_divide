@@ -101,6 +101,8 @@ ENV/
 .mypy_cache/
 
 # special
+*.swn
+*.swo
 *.swp
 *.jpg
 *.npy
