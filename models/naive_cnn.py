@@ -1,9 +1,8 @@
 from model import *
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import CSVLogger, ModelCheckpoint
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
-from keras.callbacks import CSVLogger
 from keras import backend as K
 
 class NaiveCNN(Model):

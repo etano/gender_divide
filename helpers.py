@@ -40,7 +40,7 @@ def copy_files(files, directory):
         shutil.copy2(file, directory)
 
 # Evaluate predictions
-def evaluate(name, predictions):
+def evaluate(name, predictions, test_dir):
     base_dir = os.path.join(tmp_dir, name)
     make_directories(base_dir, ['female/female', 'male/male', 'male/female', 'female/male'])
     confusion_matrix = np.zeros((2,2))

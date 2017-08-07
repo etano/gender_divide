@@ -1,4 +1,5 @@
 from model import *
+from keras.callbacks import CSVLogger, ModelCheckpoint
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense, Activation
 from keras import applications
@@ -35,13 +36,15 @@ class VGG16(Model):
 
         self.model = Sequential()
         self.model.add(Flatten(input_shape=features.shape[1:]))
-        self.model.add(Dense(256))
-        self.model.add(BatchNormalization())
-        self.model.add(PReLU())
+        self.model.add(Dense(256, activation='relu'))
         self.model.add(Dropout(0.5))
         self.model.add(Dense(1))
         self.model.add(Activation('sigmoid'))
-        self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        self.model.compile(
+            optimizer = 'adam',
+            loss = 'binary_crossentropy',
+            metrics = ['accuracy']
+        )
 
         self.suffix = '_'+self.name+'_'+str(self.img_width)+'_'+str(self.img_height)
 
@@ -56,12 +59,7 @@ class VGG16(Model):
             class_weights (dict): Dictionary with class weights
         """
 
-        train_datagen = ImageDataGenerator(
-            rescale = 1./255,
-            shear_range = 0.2,
-            zoom_range = 0.2,
-            horizontal_flip = True
-        )
+        train_datagen = ImageDataGenerator(rescale = 1./255)
         filenames_file, features_file, labels_file = self.save_bottleneck_features(train_dir, 'train'+self.suffix, train_datagen)
         train_data = np.load(open(features_file))
         train_labels = np.load(open(labels_file))
@@ -70,13 +68,29 @@ class VGG16(Model):
         test_data = np.load(open(features_file))
         test_labels = np.load(open(labels_file))
 
+        # Checkpointing
+        checkpoint = ModelCheckpoint(
+            os.path.join(self.weights_dir, self.name+'_{epoch:02d}_{val_acc:.2f}.h5'),
+            monitor = 'val_acc',
+            verbose = 1,
+            save_best_only = False,
+            mode = 'max'
+        )
+
+        # Logging
+        csv_logger = CSVLogger(os.path.join(self.weights_dir, self.name+'_log.csv'), append=True, separator=',')
+
+        # Fit
+        callbacks_list = [checkpoint, csv_logger]
         self.model.fit(
             train_data,
             train_labels,
             epochs = epochs,
             batch_size = batch_size,
             validation_data = (test_data, test_labels),
-            class_weight = class_weight
+            class_weight = class_weight,
+            callbacks = callbacks_list,
+            shuffle = True
         )
 
     def predict(self, dir, batch_size=16):

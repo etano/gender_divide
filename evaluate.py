@@ -16,7 +16,8 @@ elif model_type == 'vgg16':
 else:
     raise NotImplementedError('Model '+model_type+' not implemented!')
 model.load(checkpoint)
+img_dir, meta_dir, train_dir, test_dir = get_directories(data_dir)
 predictions = model.predict(test_dir)
 
 # Evaluate
-evaluate(name, predictions)
+evaluate(name, predictions, test_dir)
