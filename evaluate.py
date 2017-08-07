@@ -4,7 +4,8 @@ from models import NaiveCNN, VGG16
 
 # Inputs
 name = sys.argv[1]
-checkpoint = sys.argv[2]
+test_dir = sys.argv[2]
+checkpoint = sys.argv[3]
 
 # Predict
 if name == 'naive_cnn':

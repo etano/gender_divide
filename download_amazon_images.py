@@ -1,6 +1,6 @@
 """Parses Amazon product metadata found at http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/meta_Clothing_Shoes_and_Jewelry.json.gz"""
 
-import sys, os, yaml, csv, urllib, tqdm
+import sys, os, yaml, csv, urllib, tqdm, gzip
 try:
     from yaml import CLoader as Loader
 except ImportError:
@@ -9,13 +9,13 @@ from multiprocessing import Pool
 
 def usage():
     print """
-USAGE: python parse.py metadata.json target_dir
+USAGE: python parse.py target_dir
 """
     sys.exit(0)
 
-def get_files_to_download(filename, target_dir):
+def parse_metadata(filename, target_dir):
     files = []
-    with open(filename, 'rb') as f:
+    with gzip.open(filename, 'rb') as f:
         count, good, bad = 0, 0, 0
         for line in f:
             count += 1
@@ -51,12 +51,19 @@ def download_file(file):
         print url, dst
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         usage()
-    filename = sys.argv[1]
-    target_dir = sys.argv[2]
-    files = get_files_to_download(filename, target_dir)
+    target_dir = sys.argv[1]
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
 
+    filename = 'meta_Clothing_Shoes_and_Jewelry.json.gz'
+    amazon_url = 'http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/'+filename
+    print 'Downloading metadata...'
+    download_file([amazon_url, os.path.join(target_dir, filename)])
+    print 'Parsing metadata...'
+    files = parse_metadata(os.path.join(target_dir, filename), target_dir)
+    print 'Downloading images...'
     pool = Pool(8)
     for _ in tqdm.tqdm(pool.imap_unordered(download_file, files), total=len(files)):
         pass

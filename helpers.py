@@ -4,13 +4,14 @@ import os, json, shutil
 import numpy as np
 
 # Directories
-img_dir = './data/img'
-meta_dir = './data/meta'
-train_dir = './data/train'
-test_dir = './data/test'
-amazon_dir = './data/amazon'
 results_dir = './results'
 tmp_dir = './tmp'
+def get_directories(data_dir):
+    img_dir = os.path.join(data_dir, 'img')
+    meta_dir = os.path.join(data_dir, 'meta')
+    train_dir = os.path.join(data_dir, 'train')
+    test_dir = os.path.join(data_dir, 'test')
+    return img_dir, meta_dir, train_dir, test_dir
 
 # Get metadata (removes duplicates)
 def get_gender_metadata(dir, file):
@@ -19,7 +20,8 @@ def get_gender_metadata(dir, file):
         return [os.path.join(dir, f) for f in set(data['female'])], [os.path.join(dir, f) for f in set(data['male'])]
 
 # Get data
-def get_data():
+def get_data(data_dir):
+    img_dir, meta_dir, train_dir, test_dir = get_directories(data_dir)
     female_train, male_train = get_gender_metadata(img_dir, os.path.join(meta_dir, 'train.json'))
     female_test, male_test = get_gender_metadata(img_dir, os.path.join(meta_dir, 'test.json'))
     return female_train, female_test, male_train, male_test
@@ -29,6 +31,13 @@ def makedirs(base_dir, dirs):
     for dir in dirs:
         if not os.path.exists(os.path.join(base_dir, dir)):
             os.makedirs(os.path.join(base_dir, dir))
+
+# Copy files
+def copy_files(files, directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    for file in files:
+        shutil.copy2(file, directory)
 
 # Evaluate predictions
 def evaluate(name, predictions):
