@@ -32,6 +32,14 @@ class AlwaysFemale(Model):
         """
         pass
 
+    def save(self, file=None):
+        """Saves the model
+
+        Args:
+            file (str): File name
+        """
+        pass
+
     def train(self, train_dir, test_dir, epochs=50, batch_size=16, class_weight=None):
         """Trains the model
 
@@ -60,10 +68,7 @@ class AlwaysFemale(Model):
             filename = split_path[-1]
             gender = split_path[-2]
             filenames.append(gender+'/'+filename)
-            if gender == 'female':
-                label = 0
-            else:
-                label = 1
+            label = 0 if (gender == 'female') else 1
             labels.append(label)
         predictions = np.zeros((len(filenames),))
         return zip(filenames, np.array(labels), predictions)

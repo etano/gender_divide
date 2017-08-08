@@ -1,0 +1,7 @@
+[[ 326.   44.]
+ [  38.   59.]]
+accuracy: 0.824411134904
+female precision: 0.881081081081
+male precision: 0.60824742268
+female recall: 0.895604395604
+male recall: 0.572815533981

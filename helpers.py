@@ -42,27 +42,34 @@ def copy_files(files, directory):
 # Evaluate predictions
 def evaluate(name, predictions, test_dir):
     base_dir = os.path.join(tmp_dir, name)
-    make_directories(base_dir, ['female/female', 'male/male', 'male/female', 'female/male'])
+    make_directories(base_dir, ['female/female', 'male/male', 'male/female', 'female/male', 'female/none', 'male/none'])
     confusion_matrix = np.zeros((2,2))
+    total_male, total_female = 0, 0
     for [file, c, p] in predictions:
         if c == 1:
-            if p >= 0.5:
+            total_male += 1
+            if p == None:
+                path = 'male/none'
+            elif p > 0.5:
                 confusion_matrix[1,1] += 1
                 path = 'male/male'
             else:
                 confusion_matrix[1,0] += 1
                 path = 'male/female'
         else:
-            if p < 0.5:
+            total_female += 1
+            if p == None:
+                path = 'female/none'
+            elif p <= 0.5:
                 confusion_matrix[0,0] += 1
                 path = 'female/female'
             else:
                 confusion_matrix[0,1] += 1
                 path = 'female/male'
         shutil.copy2(os.path.join(test_dir, file), os.path.join(base_dir, path))
-    print confusion_matrix
-    print 'accuracy:', np.trace(confusion_matrix)/np.sum(confusion_matrix)
-    print 'female precision:', confusion_matrix[0,0]/np.sum(confusion_matrix[0,:])
-    print 'male precision:', confusion_matrix[1,1]/np.sum(confusion_matrix[1,:])
-    print 'female recall:', confusion_matrix[0,0]/np.sum(confusion_matrix[:,0])
-    print 'male recall:', confusion_matrix[1,1]/np.sum(confusion_matrix[:,1])
+    print(confusion_matrix)
+    print('accuracy:', np.trace(confusion_matrix)/np.sum(confusion_matrix))
+    print('female precision:', confusion_matrix[0,0]/np.sum(confusion_matrix[0,:]))
+    print('male precision:', confusion_matrix[1,1]/np.sum(confusion_matrix[1,:]))
+    print('female recall:', confusion_matrix[0,0]/total_female)
+    print('male recall:', confusion_matrix[1,1]/total_male)
