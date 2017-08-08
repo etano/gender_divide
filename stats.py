@@ -5,11 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from helpers import *
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 2:
     print "USAGE: python stats.py DATA_BASE_DIR"
     sys.exit(0)
 
-img_dir, meta_dir, train_dir, test_dir = get_directories(sys.argv[1])
+data_dir = sys.argv[1]
+img_dir, meta_dir, train_dir, test_dir = get_directories(data_dir)
 
 # Count files
 n_files = lambda x: len([f for f in os.listdir(x) if os.path.isfile(os.path.join(x, f))])
@@ -18,7 +19,7 @@ print '  Female: %d' % n_files(os.path.join(img_dir, 'female'))
 print '  Male: %d' % n_files(os.path.join(img_dir, 'male'))
 
 # Get data
-female_train, female_test, male_train, male_test = get_data()
+female_train, female_test, male_train, male_test = get_data(data_dir)
 female_all = female_train + female_test
 male_all = male_train + male_test
 print 'Metadata count: '
@@ -44,7 +45,7 @@ def plot_resolutions(train_files, test_files, name):
             heights.append(height)
             widths.append(width)
             counts.append(count)
-        plt.scatter(heights, widths, c=counts, color=color, marker=marker, alpha=.4)
+        plt.scatter(heights, widths, color=color, marker=marker, alpha=.4)
     add_points(train_files, 'b', '^')
     add_points(test_files, 'r', 's')
     x1,x2,y1,y2 = plt.axis()

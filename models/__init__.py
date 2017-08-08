@@ -4,6 +4,7 @@ from vgg16_top import *
 from always_female import *
 from face_gender import *
 from ensemble import *
+from random import *
 
 def load_model(name, type, weights_dir, checkpoint=None):
     """Load a model
@@ -14,12 +15,14 @@ def load_model(name, type, weights_dir, checkpoint=None):
         weights_dir (str): Where to store weights
         checkpoint (str): (optional) Path to HDF5 checkpoint
     """
-    if type == 'naive_cnn':
+    if type == 'always_female':
+        model = AlwaysFemale(weights_dir, name)
+    elif type == 'random':
+        model = Random(weights_dir, name)
+    elif type == 'naive_cnn':
         model = NaiveCNN(weights_dir, name)
     elif type == 'vgg16':
         model = VGG16(weights_dir, name)
-    elif type == 'always_female':
-        model = AlwaysFemale(weights_dir, name)
     elif type == 'face_gender':
         model = FaceGender('./models/pretrained/haarcascade_frontalface_default.xml',
                            './models/pretrained/face_gender_cnn.h5', weights_dir, name)
