@@ -2,8 +2,8 @@
 
 |        | pred. female | pred. male |
 | ------ | ------------ | ---------- |
-| female | 370          | 0          |
-| male   | 97           | 0          |
+| female | 185          | 185        |
+| male   | 49           | 48         |
 
 - accuracy: 0.50
 - female precision: 0.50
