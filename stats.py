@@ -5,6 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from helpers import *
 
+if len(sys.argv) < 4:
+    print "USAGE: python stats.py DATA_BASE_DIR"
+    sys.exit(0)
+
 img_dir, meta_dir, train_dir, test_dir = get_directories(sys.argv[1])
 
 # Count files

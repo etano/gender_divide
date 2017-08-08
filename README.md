@@ -49,7 +49,7 @@ Some images are clearly mislabeled. These were fixed by hand and can be download
 Data was supplemented with data from Amazon. It can be downloaded and setup as follows:
 
     mkdir -p data && cd data
-    wget https://www.dropbox.com/s/w7v47ssa63oml1i/amazon.tar.gz
+    wget https://www.dropbox.com/s/q33ftmphiofnv4m/amazon.tar.gz
     tar -xzvf amazon.tar.gz
     cd ..
     python make_meta_json data/amazon/img data/amazon/meta data/data_v2/meta/test.json 15000
