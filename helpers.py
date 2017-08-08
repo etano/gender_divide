@@ -107,8 +107,8 @@ def evaluate(name, predictions, test_dir):
         shutil.copy2(os.path.join(test_dir, file), os.path.join(base_dir, path))
     print(confusion_matrix)
     print('accuracy:', np.trace(confusion_matrix)/np.sum(confusion_matrix))
-    print('female precision:', confusion_matrix[0,0]/np.sum(confusion_matrix[0,:]))
-    print('male precision:', confusion_matrix[1,1]/np.sum(confusion_matrix[1,:]))
+    print('female precision:', confusion_matrix[0,0]/np.sum(confusion_matrix[:,0]))
+    print('male precision:', confusion_matrix[1,1]/np.sum(confusion_matrix[:,1]))
     print('female recall:', confusion_matrix[0,0]/total_female)
     print('male recall:', confusion_matrix[1,1]/total_male)
 

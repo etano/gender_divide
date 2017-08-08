@@ -1,8 +1,8 @@
 Found 467 images belonging to 2 classes.
-[[ 303.   67.]
- [  65.   29.]]
-('accuracy:', 0.71551724137931039)
-('female precision:', 0.81891891891891888)
-('male precision:', 0.30851063829787234)
-('female recall:', 0.81891891891891888)
-('male recall:', 0.30851063829787234)
+[[ 297.   73.]
+ [  70.   24.]]
+('accuracy:', 0.69181034482758619)
+('female precision:', 0.80926430517711168)
+('male precision:', 0.24742268041237114)
+('female recall:', 0.80270270270270272)
+('male recall:', 0.25531914893617019)

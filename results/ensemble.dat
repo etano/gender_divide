@@ -1,12 +1,11 @@
 Running vgg16_ensemble ...
-Found 467 images belonging to 2 classes.
 ...done.
 Running face_gender_ensemble ...
 ...done.
 [[ 324.   46.]
  [  39.   58.]]
 ('accuracy:', 0.8179871520342612)
-('female precision:', 0.87567567567567572)
-('male precision:', 0.59793814432989689)
+('female precision:', 0.8925619834710744)
+('male precision:', 0.55769230769230771)
 ('female recall:', 0.87567567567567572)
 ('male recall:', 0.59793814432989689)
