@@ -1,0 +1,7 @@
+[[ 370.    0.]
+ [  97.    0.]]
+('accuracy:', 0.79229122055674517)
+('female precision:', 1.0)
+('male precision:', 0.0)
+('female recall:', 1.0)
+('male recall:', 0.0)
