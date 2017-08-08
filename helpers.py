@@ -57,6 +57,17 @@ def get_data(data_dir):
     female_test, male_test = get_gender_metadata(img_dir, os.path.join(meta_dir, 'test.json'))
     return female_train, female_test, male_train, male_test
 
+def make_directories(base_dir, dirs):
+    """Make directories in base_dir given list of directory paths
+
+    Args:
+        base_dir (str): Path to base data directory
+        dirs (list(str)): Directories to make
+    """
+    for dir in dirs:
+        if not os.path.exists(os.path.join(base_dir, dir)):
+            os.makedirs(os.path.join(base_dir, dir))
+
 def evaluate(name, predictions, test_dir):
     """Parse a set of predictions coming from test_dir,
        copy images into new directories accordingly,
@@ -101,12 +112,13 @@ def evaluate(name, predictions, test_dir):
     print('female recall:', confusion_matrix[0,0]/total_female)
     print('male recall:', confusion_matrix[1,1]/total_male)
 
-def get_imgs(gender, dir, max_imgs=None):
-    """Get list of images
+def get_imgs(gender, dir, test_meta, max_imgs=None):
+    """Get list of images excluding ones in test_meta
 
     Args:
         gender (str): Gender of images
         dir (str): Path to base directory of images
+        test_meta (json): JSON object with images to avoid
         max_imgs (int): (optional) Maximum number of images to return
 
     Returns:

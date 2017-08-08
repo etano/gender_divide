@@ -1,6 +1,5 @@
-import os, cv2
+import os, cv2, keras
 from imutils import paths
-from keras.models import load_model
 from keras.preprocessing import image
 from model import *
 
@@ -28,7 +27,7 @@ class FaceGender(Model):
 
         # Load classifers
         self.cc = cv2.CascadeClassifier(cascade_classifier_weights)
-        self.gender_classifier = load_model(gender_classifier_weights)
+        self.gender_classifier = keras.models.load_model(gender_classifier_weights, compile=False)
 
     def load(self, file=None):
         """Loads the model

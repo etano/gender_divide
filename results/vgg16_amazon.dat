@@ -1,7 +1,8 @@
-[[ 274.   96.]
- [  41.   56.]]
-accuracy: 0.706638115632
-female precision: 0.740540540541
-male precision: 0.577319587629
-female recall: 0.869841269841
-male recall: 0.368421052632
+Found 467 images belonging to 2 classes.
+[[ 269.  101.]
+ [  45.   52.]]
+('accuracy:', 0.68736616702355458)
+('female precision:', 0.72702702702702704)
+('male precision:', 0.53608247422680411)
+('female recall:', 0.72702702702702704)
+('male recall:', 0.53608247422680411)

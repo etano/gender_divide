@@ -15,8 +15,8 @@ max_imgs = int(sys.argv[4]) if len(sys.argv) > 4 else None
 
 # Get images
 train_meta = {
-    'female': get_imgs('female', img_dir, max_imgs),
-    'male': get_imgs('male', img_dir, max_imgs)
+    'female': get_imgs('female', img_dir, test_meta, max_imgs),
+    'male': get_imgs('male', img_dir, test_meta, max_imgs)
 }
 
 # Write out JSON file

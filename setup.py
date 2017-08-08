@@ -3,17 +3,6 @@
 import sys
 from helpers import *
 
-def make_directories(base_dir, dirs):
-    """Make directories in base_dir given list of directory paths
-
-    Args:
-        base_dir (str): Path to base data directory
-        dirs (list(str)): Directories to make
-    """
-    for dir in dirs:
-        if not os.path.exists(os.path.join(base_dir, dir)):
-            os.makedirs(os.path.join(base_dir, dir))
-
 def copy_files(files, dir):
     """Copy files into directory that may or may not exist
 
