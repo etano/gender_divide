@@ -32,5 +32,6 @@ def load_model(name, type, weights_dir, checkpoint=None):
         model = Ensemble([vgg_model, face_gender_model], weights_dir, name)
     else:
         raise NotImplementedError('Model '+type+' not implemented!')
-    model.load(checkpoint)
+    if checkpoint != None:
+        model.load(checkpoint)
     return model
