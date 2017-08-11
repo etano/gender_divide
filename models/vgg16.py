@@ -3,8 +3,14 @@ from keras.callbacks import CSVLogger, ModelCheckpoint
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense, Activation
 from keras import applications
+from keras.preprocessing import image
 from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import PReLU
+
+def preprocess(img):
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    return applications.imagenet_utils.preprocess_input(x)
 
 class VGG16(Model):
     """Transfer learning model starting from VGG16 (train on bottleneck features)
@@ -41,7 +47,7 @@ class VGG16(Model):
         self.model.add(Dense(1))
         self.model.add(Activation('sigmoid'))
         self.model.compile(
-            optimizer = 'adam',
+            optimizer = 'adadelta',
             loss = 'binary_crossentropy',
             metrics = ['accuracy']
         )
@@ -59,8 +65,7 @@ class VGG16(Model):
             class_weights (dict): Dictionary with class weights
         """
 
-        train_datagen = ImageDataGenerator(rescale = 1./255)
-        filenames_file, features_file, labels_file = self.save_bottleneck_features(train_dir, 'train'+self.suffix, train_datagen)
+        filenames_file, features_file, labels_file = self.save_bottleneck_features(train_dir, 'train'+self.suffix)
         train_data = np.load(open(features_file))
         train_labels = np.load(open(labels_file))
 
@@ -115,7 +120,7 @@ class VGG16(Model):
 
         return zip(filenames, labels, predictions)
 
-    def save_bottleneck_features(self, dir, suffix, datagen=ImageDataGenerator(rescale=1./255), overwrite=False):
+    def save_bottleneck_features(self, dir, suffix, datagen=ImageDataGenerator(preprocessing_function=preprocess), overwrite=False):
         """Saves features coming from the bottleneck model
 
         Args:
