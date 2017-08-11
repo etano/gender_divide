@@ -6,8 +6,8 @@
 | male   | 49           | 48         |
 
 - accuracy: 0.50
-- female precision: 0.50
-- male precision: 0.50
+- female precision: 0.79
+- male precision: 0.21
 - female recall: 0.50
 - male recall: 0.50
 
