@@ -6,7 +6,7 @@ The future is non-binary, but for now let's say it is to make things easier...
 
 Assuming Ubuntu and root priviledges:
 
-    sudo apt-get install -y python-pip zip hdf5-tools
+    sudo apt-get update && sudo apt-get install -y python-pip zip hdf5-tools
     sudo pip install --upgrade pip
     sudo pip install keras
     sudo pip install tensorflow
