@@ -27,7 +27,7 @@ def load_model(name, type, weights_dir, checkpoint=None):
         model = FaceGender('./models/pretrained/haarcascade_frontalface_default.xml',
                            './models/pretrained/face_gender_cnn.h5', weights_dir, name)
     elif type == 'ensemble':
-        vgg_model = load_model('vgg16_'+name, 'vgg16', weights_dir, './results/vgg16_data_v2.h5')
+        vgg_model = load_model('vgg16_'+name, 'vgg16', weights_dir, './results/vgg16_amazon.h5')
         face_gender_model = load_model('face_gender_'+name, 'face_gender', weights_dir, None)
         model = Ensemble([vgg_model, face_gender_model], weights_dir, name)
     else:

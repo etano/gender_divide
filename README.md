@@ -18,35 +18,9 @@ Assuming Ubuntu and root priviledges:
 
 # Data
 
-## Fashwell
-
-To download use https://storage.cloud.google.com/fw-share/20170803-fw-gender-classification-data.zip
-
-Then setup with:
-
-    mkdir -p data
-    mv 20170803-fw-gender-classification-data.zip data/
-    cd data/
-    unzip 20170803-fw-gender-classification-data.zip
-    cd ..
-    python setup.py data/data_v2
-
-## Corrected
-
-Some images are clearly mislabeled. These were fixed by hand and can be downloaded at https://drive.google.com/uc?export=download&confirm=iD8U&id=0B62SS8vA5tqgYnNoYWw0NHZvV1U
-
-Then setup with:
-
-    mkdir -p data
-    mv corrected.tar.gz data/
-    tar -xzvf corrected.tar.gz
-    cd ..
-    python make_meta_json.py data/corrected/img data/corrected/meta data/data_v2/meta/test.json
-    python setup.py data/corrected
-
 ## Amazon
 
-Data was supplemented with data from Amazon. It can be downloaded at https://drive.google.com/open?id=0B62SS8vA5tqgMlVYWklMWmpoaEk
+Image data from Amazon. It can be downloaded with download_amazon_images.py. It will take about an hour.
 
 Then setup with:
 
@@ -54,8 +28,10 @@ Then setup with:
     mv amazon.tar.gz data/
     tar -xzvf amazon.tar.gz
     cd ..
-    python make_meta_json.py data/amazon/img data/amazon/meta data/data_v2/meta/test.json 15000
+    python make_meta_json.py data/amazon/img data/amazon/meta 0.1 15000
     python setup.py data/amazon
+
+where 0.1 is the test fraction and 15000 is the maximum number of images
 
 # Train
 
