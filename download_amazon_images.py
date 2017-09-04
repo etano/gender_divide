@@ -7,65 +7,52 @@ except ImportError:
     from yaml import Loader
 from multiprocessing import Pool
 
-def usage():
-    print """
-USAGE: python parse.py target_dir
-"""
-    sys.exit(0)
-
-def download(target_dir):
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-
-    filename = 'meta_Clothing_Shoes_and_Jewelry.json.gz'
-    amazon_url = 'http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/'+filename
-    print 'Downloading metadata...'
-    download_file([amazon_url, os.path.join(target_dir, filename)])
-    print 'Parsing metadata...'
-    files = parse_metadata(os.path.join(target_dir, filename), target_dir)
-    print 'Downloading images...'
-    pool = Pool(8)
-    for _ in tqdm.tqdm(pool.imap_unordered(download_file, files), total=len(files)):
-        pass
-
-def parse_metadata(filename, target_dir):
-    files = []
+def parse_metadata(filename):
+    lines = []
     with gzip.open(filename, 'rb') as f:
-        count, good, bad = 0, 0, 0
-        for line in f:
-            count += 1
-            if not (count % 10000):
-                print "count:", count, "good:", good, ", bad:", bad
-            if ("'imUrl':" in line) and ("'categories':" in line):
-                try:
-                    line = line.rstrip().replace("\\'","''")
-                    product = yaml.load(line, Loader=Loader)
-                    imUrl, categories = product['imUrl'], product['categories'][0]
-                    subcategory = categories[1] if len(categories) > 1 else None
-                    if subcategory == 'Men':
-                        gender = 'male'
-                    elif subcategory == 'Women':
-                        gender = 'female'
-                    else:
-                        continue
-                    file = os.path.join(target_dir, gender+'/'+imUrl.split('/')[-1])
-                    files.append([imUrl, file])
-                    good += 1
-                except Exception as e:
-                    print line
-                    print e
-                    bad += 1
-    return files
+        lines = f.read().splitlines()
+    return lines
 
-def download_file(file):
-    [url, dst] = file
-    try:
-        if not os.path.exists(dst):
-            urllib.urlretrieve(url, dst)
-    except Exception as e:
-        print url, dst
+def parse_line(line):
+    if ("'imUrl':" in line) and ("'categories':" in line):
+        try:
+            line = line.rstrip().replace("\\'","''")
+            product = yaml.load(line, Loader=Loader)
+            url, categories = product['imUrl'], product['categories'][0]
+            subcategory = categories[1] if len(categories) > 1 else None
+            if subcategory == 'Men':
+                gender = 'male'
+            elif subcategory == 'Women':
+                gender = 'female'
+            else:
+                return
+            filename = url.split('/')[-1]
+            download_file(url, os.path.join(target_dir, gender+'/'+filename))
+        except Exception as e:
+            return
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        usage()
-    download(target_dir)
+def download_file(url, dst):
+    if not os.path.exists(dst):
+        urllib.urlretrieve(url, dst)
+
+n_threads = 20
+target_dir = "./data/amazon"
+filename = 'meta_Clothing_Shoes_and_Jewelry.json.gz'
+amazon_url = 'http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/'+filename
+
+print 'Downloading metadata...'
+if not os.path.exists(target_dir):
+    os.makedirs(target_dir)
+download_file(amazon_url, os.path.join(target_dir, filename))
+
+print 'Loading metadata...'
+lines = parse_metadata(os.path.join(target_dir, filename))
+
+print 'Downloading images...'
+if not os.path.exists(os.path.join(target_dir, 'female')):
+    os.makedirs(os.path.join(target_dir, 'female'))
+if not os.path.exists(os.path.join(target_dir, 'male')):
+    os.makedirs(os.path.join(target_dir, 'male'))
+pool = Pool(n_threads)
+for _ in tqdm.tqdm(pool.imap_unordered(parse_line, lines), total=len(lines)):
+    pass
